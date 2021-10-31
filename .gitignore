@@ -1,0 +1,9 @@
+# ncurses example files
+ncurses_programs
+
+# test files
+Example.*
+test.*
+
+# executable files
+*.out
