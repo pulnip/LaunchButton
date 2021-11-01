@@ -2,9 +2,7 @@
 #define __INC_LBENGINE_TPP
 
 void My::LBEngine::EngineThread(void){
-    if(OnCreate()){
-        isActive=false;
-    }
+    if(OnCreate()) isActive=false;
 
     auto t1=std::chrono::system_clock::now();
     auto t2=std::chrono::system_clock::now();
@@ -14,15 +12,14 @@ void My::LBEngine::EngineThread(void){
         ElapsedTime dt=(t2-t1).count();
         t1=t2;
 
-        if(OnUpdate(dt)){
-            isActive=false;
-        }
+        if(OnUpdate(dt)) isActive=false;
     }
 
-    if(OnDestroy()){}
+    if(OnDestroy()){ }
 }
 
 int My::LBEngine::OnCreate(void){
+    // Actually, Return value of initscr() is equal to "stdscr".
     base=initscr();
     getmaxyx(base, baseSize.height, baseSize.width);
 
@@ -33,7 +30,7 @@ int My::LBEngine::OnCreate(void){
     start_color();
     noecho();
 
-    refresh();
+    wrefresh(base);
 
     keypad(base, TRUE);
     mousemask(ALL_MOUSE_EVENTS|REPORT_MOUSE_POSITION, NULL);
@@ -42,12 +39,14 @@ int My::LBEngine::OnCreate(void){
 }
 
 int My::LBEngine::OnUpdate(LBEngine::ElapsedTime dt){
-    MEVENT mevent;
-
+    wrefresh(base);
+    
     int key=wgetch(base);
     switch(key){
     case KEY_MOUSE:
+        MEVENT mevent;
         if(getmouse(&mevent)==OK){
+            #warning "LOGGING"
             log<<mevent.x<<' '<<mevent.y<<std::endl;
             break;
         }
@@ -55,7 +54,7 @@ int My::LBEngine::OnUpdate(LBEngine::ElapsedTime dt){
         isActive=false;
         return 0;
     }
-    
+
     wrefresh(base);
 
     std::for_each(buttons.begin(), buttons.end(), [](const Button& b){
