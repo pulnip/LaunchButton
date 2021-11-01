@@ -4,7 +4,9 @@
 #include<thread>
 #include<chrono>
 #include<list>
+#include<algorithm>
 
+#include"MyTypes.h"
 #include"Button.h"
 
 #include"LBEngine.hpp"

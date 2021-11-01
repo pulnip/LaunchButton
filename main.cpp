@@ -1,7 +1,7 @@
 #include"LBEngine/LBEngine.h"
 
 int main(void){
-    LBEngine be;
+    My::LBEngine be;
 
     be.start();
 

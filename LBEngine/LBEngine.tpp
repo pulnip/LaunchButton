@@ -1,7 +1,7 @@
 #ifndef __INC_LBENGINE_TPP
 #define __INC_LBENGINE_TPP
 
-int LBEngine::start(void){
+int My::LBEngine::start(void){
     isActive=true;
     std::thread t(&LBEngine::EngineThread, this);
 
@@ -10,7 +10,7 @@ int LBEngine::start(void){
     return 0;
 }
 
-void LBEngine::EngineThread(void){
+void My::LBEngine::EngineThread(void){
     if(OnCreate()){
         isActive=false;
     }
@@ -31,23 +31,29 @@ void LBEngine::EngineThread(void){
     if(OnDestroy()){}
 }
 
-int LBEngine::OnCreate(void){
-    initscr();
+int My::LBEngine::OnCreate(void){
+    base=initscr();
+    getmaxyx(base, baseSize.height, baseSize.width);
 
     if(has_colors()==FALSE){
         puts("Terminal does not support colors");
         return 1;
     }
     start_color();
+    noecho();
+
+    refresh();
 
     return 0;
 }
 
-int LBEngine::OnUpdate(LBEngine::ElapsedTime dt){
-
+int My::LBEngine::OnUpdate(LBEngine::ElapsedTime dt){
+    std::for_each(buttons.begin(), buttons.end(), [](const Button& b){
+        b.refresh();
+    });
 }
 
-int LBEngine::OnDestroy(void){
+int My::LBEngine::OnDestroy(void){
     endwin();
 
     return 0;
