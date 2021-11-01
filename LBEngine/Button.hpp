@@ -12,17 +12,17 @@ namespace My{
         Pos pos;
         Size size;
         Color color;
-        void setColor(short FG, short BG);
+        void setColor(const short FG, const short BG);
 
         char title[12];
         char command[256];
 
     public:
         Button(
-            const char*  title            , const char*  cmd               ,
-            unsigned int width            , unsigned int height=1          ,
-            int          x    =0          , int          y     =0          ,
-            short        FG   =COLOR_WHITE, short        BG    =COLOR_BLACK
+            const char*  title                  , const char*  cmd                     ,
+            const unsigned int width            , const unsigned int height=1          ,
+            const int          x    =0          , const int          y     =0          ,
+            const short        FG   =COLOR_WHITE, const short        BG    =COLOR_BLACK
         )
         :window(newwin(height, width, y, x)),
         id(newId++), pos{x, y}, size{width, height}, color{FG, BG}{
@@ -35,8 +35,8 @@ namespace My{
             this->command[255]='\0';
         }
 
-        int refresh(void) const;
-        int click(void);
+        const int refresh(void) const;
+        const int execute(void) const;
     };
 }
 

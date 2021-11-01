@@ -1,15 +1,6 @@
 #ifndef __INC_LBENGINE_TPP
 #define __INC_LBENGINE_TPP
 
-int My::LBEngine::start(void){
-    isActive=true;
-    std::thread t(&LBEngine::EngineThread, this);
-
-    t.join();
-
-    return 0;
-}
-
 void My::LBEngine::EngineThread(void){
     if(OnCreate()){
         isActive=false;
@@ -44,17 +35,47 @@ int My::LBEngine::OnCreate(void){
 
     refresh();
 
+    keypad(base, TRUE);
+    mousemask(ALL_MOUSE_EVENTS|REPORT_MOUSE_POSITION, NULL);
+
     return 0;
 }
 
 int My::LBEngine::OnUpdate(LBEngine::ElapsedTime dt){
+    MEVENT mevent;
+
+    int key=wgetch(base);
+    switch(key){
+    case KEY_MOUSE:
+        if(getmouse(&mevent)==OK){
+            log<<mevent.x<<' '<<mevent.y<<std::endl;
+            break;
+        }
+    case KEY_RESIZE:
+        isActive=false;
+        return 0;
+    }
+    
+    wrefresh(base);
+
     std::for_each(buttons.begin(), buttons.end(), [](const Button& b){
         b.refresh();
     });
+
+    return 0;
 }
 
 int My::LBEngine::OnDestroy(void){
     endwin();
+
+    return 0;
+}
+
+int My::LBEngine::start(void){
+    isActive=true;
+    std::thread t(&LBEngine::EngineThread, this);
+
+    t.join();
 
     return 0;
 }

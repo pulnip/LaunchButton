@@ -7,11 +7,6 @@ namespace My{
         using ElapsedTime=double;
 
     private:
-        int OnCreate(void);
-        int OnUpdate(ElapsedTime dt);
-        int OnDestroy(void);
-
-    private:
         bool isActive=false;
 
         WINDOW *base;
@@ -19,11 +14,26 @@ namespace My{
 
         std::list<Button> buttons;
 
+        std::ofstream log;
+
+    public:
+        LBEngine(){
+            log.open("LBEngine.log");
+        }
+        ~LBEngine(){
+            log.close();
+        }
+
+    private:
+    /** @brief Main Engine Thread */
+        void EngineThread(void);
+        int OnCreate(void);
+        int OnUpdate(ElapsedTime dt);
+        int OnDestroy(void);
+
     public:
     /** @brief start the Engine */
         int start(void);
-    /** @brief Main Engine Thread */
-        void EngineThread(void);
     };
 }
 
