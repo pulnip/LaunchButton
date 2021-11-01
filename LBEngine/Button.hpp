@@ -10,10 +10,16 @@ namespace My{
 
         WINDOW* window;
         Pos pos;
+    public:
+        void setPos(const int x, const int y);
+        void move  (const int x, const int y){ setPos(pos.x+x, pos.y+y); }
+        const Pos& getPos(void) const{ return pos; }
+    private:
         Size size;
         Color color;
+    public:
         void setColor(const short FG, const short BG);
-
+    private:
         char title[12];
         char command[256];
 
@@ -38,6 +44,8 @@ namespace My{
 
         const int refresh(void) const;
         const int execute(void) const;
+
+        const bool isInside(const Pos& thatPos) const;
     };
 }
 

@@ -79,4 +79,20 @@ int My::LBEngine::start(void){
     return 0;
 }
 
+int My::LBEngine::click(MEVENT* mevent){
+    auto itClickedButton=std::find_if(
+        buttons.rbegin(), buttons.rend(),
+        [mevent](const My::Button& b){
+            My::Pos pos={mevent->x, mevent->y};
+            return b.isInside(pos);
+    });
+    if(itClickedButton==buttons.rend()) return 1;
+    
+    #error "NO IMPL";
+    //TODO
+    // keyDown -> wait for moving/executing
+    // keyDown & keyUp (pos not change)-> execute command
+    // keyDown & keyUp (pos change) -> move button
+}
+
 #endif

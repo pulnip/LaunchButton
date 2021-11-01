@@ -27,6 +27,8 @@ namespace My{
         int OnUpdate(ElapsedTime dt);
         int OnDestroy(void);
 
+        int click(MEVENT *mevent);
+
     public:
     /** @brief start the Engine */
         int start(void);
