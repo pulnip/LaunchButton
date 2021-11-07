@@ -9,9 +9,10 @@
 				"-fdiagnostics-color=always",
 				"-g",
 				"${file}",
-				"-lncurses", "-lpthread",
+				"-std=gnu++17",
 				"-o",
-				"${fileDirname}/${fileBasenameNoExtension}.out"
+				"${fileDirname}/${fileBasenameNoExtension}.out",
+				"-lncurses", "-lpthread"
 			],
 			"options": {
 				"cwd": "${fileDirname}"

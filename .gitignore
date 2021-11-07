@@ -2,7 +2,7 @@
 ncurses_programs
 
 # test files
-Example.*
+Example*
 test*
 
 # executable files
