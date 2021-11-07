@@ -25,8 +25,8 @@ namespace My{
 
     public:
         Button(
-            const         char *title            , const         char *cmd               ,
-            const unsigned int  width            , const unsigned int  height=1          ,
+            const         char *title="UNNAMED"  , const         char *cmd   =""         ,
+            const unsigned int  width=13         , const unsigned int  height=3          ,
             const          int  x    =0          , const          int  y     =0          ,
             const        short  FG   =COLOR_WHITE, const        short  BG    =COLOR_BLACK
         )
