@@ -2,7 +2,13 @@
 #define __INC_BUTTON_H
 
 #include<ncurses.h>
-#include<string.h>
+#include<cstring>
+#include<string>
+#include<vector>
+#include<sstream>
+#include<iostream>
+#include<unistd.h>
+#include<sys/wait.h>
 
 #include"MyTypes.h"
 
