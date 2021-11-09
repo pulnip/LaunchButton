@@ -43,14 +43,14 @@ namespace My{
                 }
                 pT[n]=NULL;
             }
-            
+
             return *this;
         }
         const char** data(void) const{ return pT; }
         const char*& operator[](int idx) const{ return pT[idx]; }
         ~strvecWrapper(){ delete[] pT; }
     };
-    std::vector<std::string> split(const std::string &str, char delim);
+    std::vector<std::string> split(const std::string &str, char delim=' ');
 
     class Button{
     private:
@@ -80,20 +80,39 @@ namespace My{
 
     public:
         Button(
-            const  std::string &title="UNNAMED"  , const  std::string &cmd   ="echo Hello, World!",
+            const  std::string &title="BUTTON"   , const  std::string &cmd   ="echo Hello, World!",
             const unsigned int  width=13         , const unsigned int  height=3                   ,
-            const          int  x    =0          , const          int  y     =0                   ,
-            const        short  FG   =COLOR_WHITE, const        short  BG    =COLOR_BLACK
+            const          int  x    =5          , const          int  y     =2                   ,
+            const        short  FG   =COLOR_BLACK, const        short  BG    =COLOR_WHITE
         )
         :window(newwin(height, width, y, x)),
         id(newId++), pos{x, y}, size{width, height}, color{FG, BG},
         title(title), command(cmd), args(split(cmd)), wrapped(args){
             init_pair(id, FG, BG);
             wbkgd(window, COLOR_PAIR(id));
-        }
-        ~Button(){ delwin(window); }
+            wborder(window, '|', '|', '-', '-', '*', 'x', '+', '+');
+            mvwprintw(window, 1, 1, title.c_str()); 
 
-        int refresh(void) const;
+            wrefresh(window);
+        }
+        Button(const Button &that){
+            #warning "Not Impl"
+        }
+
+        int close(void){ delwin(window); return 0; }
+    
+        int draw(void){
+            wborder(window, '|', '|', '-', '-', '*', 'x', '+', '+');
+            mvwprintw(window, 1, 1, title.c_str()); 
+
+            return 0;
+        }
+
+        int refresh(void) {
+            wrefresh(window);
+            
+            return 0;
+        }
         int execute(void);
 
         bool isInside(const Pos& thatPos) const;

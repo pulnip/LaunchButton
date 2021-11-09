@@ -28,19 +28,23 @@ int My::LBEngine::OnCreate(void){
         return 1;
     }
     start_color();
-    noecho();
-
-    wrefresh(base);
+    echo();
 
     keypad(base, TRUE);
     mousemask(ALL_MOUSE_EVENTS|REPORT_MOUSE_POSITION, NULL);
 
+    buttons.push_back(Button());
+
+    prompt();
+    (*buttons.begin()).draw();
+
+    refresh();
+    (*buttons.begin()).refresh();
+
     return 0;
 }
 
-int My::LBEngine::OnUpdate(LBEngine::ElapsedTime dt){
-    wrefresh(base);
-    
+int My::LBEngine::OnUpdate(LBEngine::ElapsedTime dt){    
     int key=wgetch(base);
     switch(key){
     case KEY_MOUSE:
@@ -53,13 +57,22 @@ int My::LBEngine::OnUpdate(LBEngine::ElapsedTime dt){
     case KEY_RESIZE:
         isActive=false;
         return 0;
+    case '\n':
+        clear();
+
+        prompt();
+        for(Button &button:buttons){
+            button.draw();
+        }
+    break;
+    case KEY_BACKSPACE:
+        printw("\b");
     }
 
-    wrefresh(base);
-
-    std::for_each(buttons.begin(), buttons.end(), [](const Button& b){
-        b.refresh();
-    });
+    refresh();
+    for(Button &button:buttons){
+        button.refresh();
+    }
 
     return 0;
 }
@@ -79,6 +92,12 @@ int My::LBEngine::start(void){
     return 0;
 }
 
+int My::LBEngine::prompt(void){
+    printw("[prompt]: ");
+    
+    return 0;
+}
+
 int My::LBEngine::click(MEVENT* mevent){
     auto itClickedButton=std::find_if(
         buttons.rbegin(), buttons.rend(),
@@ -89,10 +108,12 @@ int My::LBEngine::click(MEVENT* mevent){
     if(itClickedButton==buttons.rend()) return 1;
     
     #error "NO IMPL";
-    //TODO
+    // TODO
     // keyDown -> wait for moving/executing
     // keyDown & keyUp (pos not change)-> execute command
     // keyDown & keyUp (pos change) -> move button
+
+    return 0;
 }
 
 #endif

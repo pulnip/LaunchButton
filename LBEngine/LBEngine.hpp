@@ -27,6 +27,7 @@ namespace My{
         int OnUpdate(ElapsedTime dt);
         int OnDestroy(void);
 
+        int prompt(void);
         int click(MEVENT *mevent);
 
     public:

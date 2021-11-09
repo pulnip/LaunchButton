@@ -1,7 +1,7 @@
 #ifndef __INC_BUTTON_TPP
 #define __INC_BUTTON_TPP
 
-std::vector<std::string> My::split(const std::string &str, char delim=' '){
+std::vector<std::string> My::split(const std::string &str, char delim){
     std::vector<std::string> result;
 
     std::stringstream ss(str+delim);
@@ -30,12 +30,6 @@ void My::Button::setColor(const short FG, const short BG){
     wbkgd(window, COLOR_PAIR(id));
 }
 
-int My::Button::refresh(void) const{
-    wrefresh(window);
-
-    return 0;
-}
-
 int My::Button::execute(void){
     if(isCmdChanged){
         auto _args=split(command);
@@ -48,10 +42,13 @@ int My::Button::execute(void){
     pid_t pid=fork();
     if(pid==0){
         if(execvp(wrapped[0], const_cast<char* const*>(wrapped.data()))<0){
-            std::cerr<<"execvp() error!"<<std::endl;
+            #warning "LOGGING"
         }
     }
-    return 0;
+
+    int status;
+    waitpid(pid, &status, 0);
+    return status;
 }
 
 bool My::Button::isInside(const Pos& thatPos) const{
