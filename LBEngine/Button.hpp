@@ -2,12 +2,15 @@
 #define __INC_BUTTON_HPP
 
 namespace My{
+    extern int logfd;
+
     class strvecWrapper{
     private:
         size_t n;
         const char** pT;
 
     public:
+        strvecWrapper()=default;
         strvecWrapper(const std::vector<std::string>& that)
         :n(that.size()), pT(new const char*[n+1]){
             for(int i=0; i<n; ++i){

@@ -2,7 +2,10 @@
 #define __INC_LBENGINE_TPP
 
 void My::LBEngine::EngineThread(void){
-    if(OnCreate()) isActive=false;
+    if(OnCreate()){
+        log("OnCreate() failed\n");
+        isActive=false;
+    }
 
     auto t1=std::chrono::system_clock::now();
     auto t2=std::chrono::system_clock::now();
@@ -15,7 +18,7 @@ void My::LBEngine::EngineThread(void){
         if(OnUpdate(dt)) isActive=false;
     }
 
-    if(OnDestroy()){ }
+    if(OnDestroy()){ log("OnDestroy() failed\n"); }
 }
 
 int My::LBEngine::OnCreate(void){
@@ -33,13 +36,14 @@ int My::LBEngine::OnCreate(void){
     keypad(base, TRUE);
     mousemask(ALL_MOUSE_EVENTS|REPORT_MOUSE_POSITION, NULL);
 
-    buttons.push_back(Button());
+    buttons.emplace_back();
+    Button &helloworld=*buttons.begin();
 
     prompt();
-    (*buttons.begin()).draw();
+    helloworld.draw();
 
     refresh();
-    (*buttons.begin()).refresh();
+    helloworld.refresh();
 
     return 0;
 }
@@ -47,13 +51,14 @@ int My::LBEngine::OnCreate(void){
 int My::LBEngine::OnUpdate(LBEngine::ElapsedTime dt){    
     int key=wgetch(base);
     switch(key){
-    case KEY_MOUSE:
+    case KEY_MOUSE:{
         MEVENT mevent;
         if(getmouse(&mevent)==OK){
-            #warning "LOGGING"
-            log<<mevent.x<<' '<<mevent.y<<std::endl;
+            log(mevent.x); log(" "); log(mevent.y); log("\n");
             break;
         }
+    }
+    case 'q':
     case KEY_RESIZE:
         isActive=false;
         return 0;
@@ -86,8 +91,10 @@ int My::LBEngine::OnDestroy(void){
 int My::LBEngine::start(void){
     isActive=true;
     std::thread t(&LBEngine::EngineThread, this);
+    log("Successfully create engine thread\n");
 
     t.join();
+    log("Engine thread ends\n");
 
     return 0;
 }
@@ -107,7 +114,7 @@ int My::LBEngine::click(MEVENT* mevent){
     });
     if(itClickedButton==buttons.rend()) return 1;
     
-    #error "NO IMPL";
+    #warning "NO IMPL";
     // TODO
     // keyDown -> wait for moving/executing
     // keyDown & keyUp (pos not change)-> execute command
