@@ -1,18 +1,6 @@
 #ifndef __INC_BUTTON_TPP
 #define __INC_BUTTON_TPP
 
-std::vector<std::string> My::split(const std::string &str, char delim){
-    std::vector<std::string> result;
-
-    std::stringstream ss(str+delim);
-    std::string temp;
-    while(std::getline(ss, temp, delim)){
-        result.push_back(temp);
-    }
-
-    return result;
-}
-
 unsigned int My::Button::newId=1;
 
 void My::Button::setPos(const int x, const int y){

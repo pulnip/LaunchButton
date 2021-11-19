@@ -11,6 +11,7 @@
 #include<sys/wait.h>
 
 #include"MyTypes.h"
+#include"mString.h"
 
 #include"Button.hpp"
 #include"Button.tpp"
