@@ -2,12 +2,18 @@
 #define __INC_TERMINAL_HPP
 
 namespace My{
-    using args_t=std::vector<std::string>;
-    using command=std::list<args_t>;
+    using Args_t=std::vector<std::string_view>;
+    using Command_t=std::list<Args_t>;
 
     class Terminal{
+    private:
+        Terminal()=delete;
     public:
-        Terminal()=default;
+        static int execute(const std::string& raw_command);
+    private:
+        static int executeOne(const Args_t& args);
+        static int pipeline(const Command_t& cmd);
+        static int redirect(const Args_t& args);
     };
 }
 

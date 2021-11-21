@@ -19,24 +19,7 @@ void My::Button::setColor(const short FG, const short BG){
 }
 
 int My::Button::execute(void){
-    if(isCmdChanged){
-        auto _args=split(command);
-        std::copy(
-            _args.begin(), _args.end(),
-            args.begin()
-        );
-        wrapped=args;
-    }
-    pid_t pid=fork();
-    if(pid==0){
-        if(execvp(wrapped[0], const_cast<char* const*>(wrapped.data()))<0){
-            #warning "LOGGING"
-        }
-    }
-
-    int status;
-    waitpid(pid, &status, 0);
-    return status;
+    return My::Terminal::execute(command);
 }
 
 bool My::Button::isInside(const Pos& thatPos) const{

@@ -1,6 +1,7 @@
 #ifndef __INC_TERMINAL_H
 #define __INC_TERMINAL_H
 
+#include<fcntl.h>
 #include<string>
 #include<vector>
 #include<list>
