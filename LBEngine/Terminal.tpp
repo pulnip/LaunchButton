@@ -16,7 +16,7 @@ int My::Terminal::execute(const std::string& raw_command){
 int My::Terminal::executeOne(const Args_t& args){
     pid_t pid=fork();
     if(pid==0){
-        strvecWrapper wrapped=args;
+        CStyleArray wrapped(args);
 
         if(execvp(wrapped[0], const_cast<char* const*>(wrapped.data()))<0){
             log("Terminal::execute failed\n");

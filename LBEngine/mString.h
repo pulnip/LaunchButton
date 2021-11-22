@@ -6,6 +6,7 @@
 #include<string>
 #include<string_view>
 #include<vector>
+#include<type_traits>
 
 #include"mString.hpp"
 #include"mString.tpp"

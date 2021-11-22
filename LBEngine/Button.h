@@ -12,6 +12,7 @@
 
 #include"MyTypes.h"
 #include"mString.h"
+#include"Terminal.h"
 
 #include"Button.hpp"
 #include"Button.tpp"

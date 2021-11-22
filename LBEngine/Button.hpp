@@ -28,7 +28,7 @@ namespace My{
     private:
         bool isCmdChanged=false;
         std::vector<std::string> args;
-        strvecWrapper wrapped;
+        CStyleArray<std::vector<std::string>> wrapped;
 
     public:
         Button(
@@ -39,7 +39,7 @@ namespace My{
         )
         :window(newwin(height, width, y, x)),
         id(newId++), pos{x, y}, size{width, height}, color{FG, BG},
-        title(title), command(cmd), args(split(cmd)), wrapped(args){
+        title(title), command(cmd), args(toVector(cmd)), wrapped(args){
             init_pair(id, FG, BG);
             wbkgd(window, COLOR_PAIR(id));
             wborder(window, '|', '|', '-', '-', '*', 'x', '+', '+');

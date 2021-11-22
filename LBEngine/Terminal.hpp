@@ -2,7 +2,7 @@
 #define __INC_TERMINAL_HPP
 
 namespace My{
-    using Args_t=std::vector<std::string_view>;
+    using Args_t=std::vector<std::string>;
     using Command_t=std::list<Args_t>;
 
     class Terminal{
