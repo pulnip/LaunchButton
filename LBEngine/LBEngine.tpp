@@ -36,9 +36,8 @@ int My::LBEngine::OnCreate(void){
     keypad(base, TRUE);
     mousemask(ALL_MOUSE_EVENTS|REPORT_MOUSE_POSITION, NULL);
 
-    buttons.emplace_back();
-    Button &helloworld=*buttons.begin();
-
+    Button &helloworld=buttons.emplace_back();
+    
     prompt();
     helloworld.draw();
 

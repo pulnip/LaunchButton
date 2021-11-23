@@ -51,6 +51,8 @@ StringContainer My::toSome(const std::string &origin, const std::vector<std::str
         // if found, push_back
         if(min!=origin.npos){
             result.push_back(strip(std::string(&origin[pos], min-pos)));
+            result.push_back(delims[i]);
+            
             pos=min+delims[idx].size();
         }
         // if not found, exit.
