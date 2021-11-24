@@ -1,7 +1,7 @@
 #ifndef __INC_TERMINAL_TPP
 #define __INC_TERMINAL_TPP
 
-int My::Terminal::execute(const std::string& raw_command){
+int My::Terminal::execute(const std::string &raw_command){
     #warning "Not impl";
     auto programs=toList(raw_command);
     
@@ -13,7 +13,7 @@ int My::Terminal::execute(const std::string& raw_command){
     //...
 }
 
-int My::Terminal::executeOne(const Args_t& args){
+int My::Terminal::executeOne(const Args_t &args){
     pid_t pid=fork();
     if(pid==0){
         CStyleArray wrapped(args);
@@ -28,11 +28,26 @@ int My::Terminal::executeOne(const Args_t& args){
     return status;
 }
 
-int My::Terminal::pipeline(const My::Command_t& cmd){
+int My::Terminal::pipeline(bool out, bool in){
+    if(!(out&&in)) return 1;
+
+
+    // exec recursively, with fifo file?
+
+    // in fifo file
+    // out fifo file
+
+    // out->in
+    // in->out
+
+    // if done "from", pop "from" (at exec)
+}
+
+int My::Terminal::redirect(const My::Args_t &arg){
 
 }
 
-int My::Terminal::redirect(const My::Args_t& arg){
+My::Args_t My::toArgs(const Command_t &command){
 
 }
 

@@ -2,8 +2,9 @@
 #define __INC_TERMINAL_HPP
 
 namespace My{
+    using Command_t=std::list<std::string>;
+    using Commands_t=std::list<Command_t>;
     using Args_t=std::vector<std::string>;
-    using Command_t=std::list<Args_t>;
 
     class Terminal{
     private:
@@ -11,10 +12,12 @@ namespace My{
     public:
         static int execute(const std::string& raw_command);
     private:
-        static int executeOne(const Args_t& args);
-        static int pipeline(const Command_t& cmd);
-        static int redirect(const Args_t& args);
+        static int executeOne(const Args_t &args);
+        static int pipeline(bool out=true, bool in=false);
+        static int redirect(const Args_t &args);
     };
+
+    Args_t toArgs(const Command_t &command);
 }
 
 #endif
