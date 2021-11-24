@@ -31,15 +31,26 @@ int My::Terminal::execute(const Args_t& args){
     return status;
 }
 
-int My::Terminal::pipeline(const Args_t &args){
+int My::Terminal::pipeline(bool out, bool in){
+    if(!(out&&in)) return 1;
+
+
+    // exec recursively, with fifo file?
+
+    // in fifo file
+    // out fifo file
+
+    // out->in
+    // in->out
+
+    // if done "from", pop "from" (at exec)
+}
+
+int My::Terminal::redirect(const My::Args_t &arg){
 
 }
 
-int My::Terminal::redirect(const Args_t &args){
-
-}
-
-My::Args_t My::Terminal::toArgs(const Command_t &cmd){
+My::Args_t My::toArgs(const Command_t &command){
 
 }
 
