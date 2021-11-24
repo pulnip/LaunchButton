@@ -25,14 +25,25 @@ namespace My{
         const value_type*& operator[](int idx){ return pT[idx]; }
     };
 
-    template<class StringContainer> StringContainer toSome(const std::string &origin, const std::vector<std::string> &delim);
+    template<class StringContainer> StringContainer toSome(
+        const std::string &origin, const std::vector<std::string> &delim,
+        const bool includeDelim
+    );
     // for pipelining, redirecting, etc...
-    std::list<std::string> toList(const std::string &origin, const std::vector<std::string> &delims={";", "&&", "&", "||", "|"}){
-        return toSome<std::list<std::string>>(origin, delims);
+    inline std::list<std::string> toList(
+        const std::string &origin,
+        const std::vector<std::string> &delims={";", "&&", "&", "||", "|"},
+        const bool includeDelim=true
+    ){
+        return toSome<std::list<std::string>>(origin, delims, includeDelim);
     }
     // for exec function(program args)
-    std::vector<std::string> toVector(const std::string &origin, const std::vector<std::string> &delims={" "}){
-        return toSome<std::vector<std::string>>(origin, delims);
+    inline std::vector<std::string> toVector(
+        const std::string &origin,
+        const std::vector<std::string> &delims={" "},
+        const bool includeDelim=true
+    ){
+        return toSome<std::vector<std::string>>(origin, delims, includeDelim);
     }
 
     std::string strip(const std::string &origin);

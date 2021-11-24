@@ -1,19 +1,22 @@
 #ifndef __INC_TERMINAL_TPP
 #define __INC_TERMINAL_TPP
 
-int My::Terminal::execute(const std::string& raw_command){
-    #warning "Not impl";
+int My::Terminal::run(const std::string& raw_command){
+    Commands_t commands;
     auto programs=toList(raw_command);
-    
-    //...
-    for(auto& raw_args: programs){
-        Args_t args=toVector(raw_args);
-        executeOne(args);
+    for(auto &program: programs){
+        commands.push_back(toList(program, {" "}, false));
     }
-    //...
+    
+    for(auto &command: commands){
+    #warning "Not impl";
+        // pipe, redirect
+        Args_t args=toArgs(command);
+        execute(args);
+    }
 }
 
-int My::Terminal::executeOne(const Args_t& args){
+int My::Terminal::execute(const Args_t& args){
     pid_t pid=fork();
     if(pid==0){
         CStyleArray wrapped(args);
@@ -28,11 +31,15 @@ int My::Terminal::executeOne(const Args_t& args){
     return status;
 }
 
-int My::Terminal::pipeline(const My::Command_t& cmd){
+int My::Terminal::pipeline(const Args_t &args){
 
 }
 
-int My::Terminal::redirect(const My::Args_t& arg){
+int My::Terminal::redirect(const Args_t &args){
+
+}
+
+My::Args_t My::Terminal::toArgs(const Command_t &cmd){
 
 }
 
