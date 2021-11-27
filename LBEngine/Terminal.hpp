@@ -2,22 +2,22 @@
 #define __INC_TERMINAL_HPP
 
 namespace My{
-    using Command_t=std::list<std::string>;
-    using Commands_t=std::list<Command_t>;
-    using Args_t=std::vector<std::string>;
-
     class Terminal{
+    public:
+        using Command_t=std::list<std::string>;
+        using Commands_t=std::list<Command_t>;
+        using Args_t=std::vector<std::string>;
+
     private:
         Terminal()=delete;
     public:
         static int run(const std::string& raw_command);
     private:
-        static int execute(const Args_t &args);
-        static int pipeline(bool out=true, bool in=false);
+        static Args_t preprocessing(const Command_t &command);
         static int redirect(const Args_t &args);
+        static int execute(const Args_t &args, bool isWait=true);
+        static int pipeline(const bool in, const bool out);
     };
-
-    Args_t toArgs(const Command_t &command);
 }
 
 #endif

@@ -29,24 +29,41 @@ namespace My{
         const std::string &origin, const std::vector<std::string> &delim,
         const bool includeDelim
     );
-    // for pipelining, redirecting, etc...
+    /**
+     * @brief from string to list
+     * 
+     * @param origin raw string
+     * @param delims (The long one must come front. ex) &&, &)
+     * @param includeDelim 
+     * @return std::list&lt;std::string&gt;
+     */
     inline std::list<std::string> toList(
         const std::string &origin,
-        const std::vector<std::string> &delims={";", "&&", "&", "||", "|"},
-        const bool includeDelim=true
+        const std::vector<std::string> &delims={" "},
+        const bool includeDelim=false
     ){
         return toSome<std::list<std::string>>(origin, delims, includeDelim);
     }
-    // for exec function(program args)
+    /**
+     * @brief from string to vector
+     * 
+     * @param origin raw string
+     * @param delims (The long one must come front. ex) &&, &)
+     * @param includeDelim 
+     * @return std::list&lt;std::string&gt;
+     */
     inline std::vector<std::string> toVector(
         const std::string &origin,
         const std::vector<std::string> &delims={" "},
-        const bool includeDelim=true
+        const bool includeDelim=false
     ){
         return toSome<std::vector<std::string>>(origin, delims, includeDelim);
     }
 
     std::string strip(const std::string &origin);
+
+    template<class StringContainer>
+    int in(const std::string &target, const StringContainer &seq);
 }
 
 #endif

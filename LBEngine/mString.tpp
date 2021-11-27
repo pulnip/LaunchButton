@@ -88,4 +88,22 @@ std::string My::strip(const std::string &origin){
     return origin.substr(first, last-first);
 }
 
+/**
+ * @brief check "is target in seq?"
+ * 
+ * @tparam StringContainer 
+ * @param target comparison target
+ * @param seq iterable sequence
+ * @return index (if not in, -1)
+ */
+template<class StringContainer>
+int My::in(const std::string &target, const StringContainer &seq){
+    int result=0;
+    for(auto &str: seq){
+        if(!target.compare(str)) return result;
+        result+=1;
+    }
+    return -1;
+}
+
 #endif
