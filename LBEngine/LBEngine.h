@@ -14,4 +14,4 @@
 #include"LBEngine.hpp"
 #include"LBEngine.tpp"
 
-#endif
+#endif // __INC_LBENGINE_H

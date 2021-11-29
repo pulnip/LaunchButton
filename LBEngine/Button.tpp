@@ -19,7 +19,7 @@ void My::Button::setColor(const short FG, const short BG){
 }
 
 int My::Button::execute(void){
-    return My::Terminal::execute(command);
+    return My::Terminal::run(command);
 }
 
 bool My::Button::isInside(const Pos& thatPos) const{
@@ -27,4 +27,4 @@ bool My::Button::isInside(const Pos& thatPos) const{
            (pos.y<=thatPos.y) && (thatPos.y<=pos.y+size.height);
 }
 
-#endif
+#endif // __INC_BUTTON_TPP

@@ -14,10 +14,12 @@ namespace My{
         static int run(const std::string& raw_command);
     private:
         static Args_t preprocessing(const Command_t &command);
-        static int redirect(const Args_t &args);
-        static int execute(const Args_t &args, bool isWait=true);
-        static int pipeline(const bool in, const bool out);
+        static int execute(
+            const Command_t &command, const bool isWait,
+            const bool myin, const bool myout,
+            const int myio_fd[2], const short myin_idx
+        );
     };
 }
 
-#endif
+#endif // __INC_TERMINAL_HPP

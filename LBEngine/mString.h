@@ -11,4 +11,4 @@
 #include"mString.hpp"
 #include"mString.tpp"
 
-#endif
+#endif // __INC_MSTRING_H

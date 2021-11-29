@@ -17,4 +17,4 @@
 #include"Button.hpp"
 #include"Button.tpp"
 
-#endif
+#endif // __INC_BUTTON_H

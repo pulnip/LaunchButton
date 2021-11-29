@@ -6,9 +6,10 @@ void My::CStyleArray<Container>::copy(const Container &that){
     int i=0;
     for(auto &element: that){
         if constexpr(std::is_class_v<typename Container::value_type>) pT[i]=element.data();
-        else pT[i]=reinterpret_cast<value_type*>(&element);
+        else pT[i]=&element;
+        i+=1;
     }
-    pT[n]=nullptr;
+    pT[i]=nullptr;
 }
 
 template<class Container>
@@ -55,7 +56,7 @@ StringContainer My::toSome(
         if(min!=origin.npos){
             result.push_back(strip(std::string(&origin[pos], min-pos)));
             if(includeDelim){
-                result.push_back(delims[i]);
+                result.push_back(delims[idx]);
             }
             pos=min+delims[idx].size();
         }
@@ -106,4 +107,4 @@ int My::in(const std::string &target, const StringContainer &seq){
     return -1;
 }
 
-#endif
+#endif // __INC_MSTRING_TPP

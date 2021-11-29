@@ -71,4 +71,4 @@ namespace My{
     };
 }
 
-#endif
+#endif // __INC_BUTTON_HPP

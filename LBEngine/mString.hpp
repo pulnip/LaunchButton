@@ -50,7 +50,7 @@ namespace My{
      * @param origin raw string
      * @param delims (The long one must come front. ex) &&, &)
      * @param includeDelim 
-     * @return std::list&lt;std::string&gt;
+     * @return std::vector&lt;std::string&gt;
      */
     inline std::vector<std::string> toVector(
         const std::string &origin,
