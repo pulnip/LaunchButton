@@ -64,6 +64,7 @@ namespace My{
 
     template<class StringContainer>
     int in(const std::string &target, const StringContainer &seq);
+    template<> int in(const std::string &substr, const std::string &str);
 }
 
 #endif

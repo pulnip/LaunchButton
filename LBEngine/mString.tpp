@@ -107,4 +107,25 @@ int My::in(const std::string &target, const StringContainer &seq){
     return -1;
 }
 
+template<> int My::in(const std::string &substr, const std::string &str){
+    const int end=str.size()-substr.size();
+    const int substr_size=substr.size();
+
+    for(int i=0; i<end; ++i){
+        if(substr[0]==str[i]){
+            bool isSubstr=true;
+            for(int j=1; j<substr_size; ++j){
+                
+                if(substr[j]!=str[i+j]){
+                    isSubstr=false;
+                    break;
+                }
+            }
+            if(isSubstr) return i;
+        }
+    }
+
+    return -1;
+}
+
 #endif // __INC_MSTRING_TPP

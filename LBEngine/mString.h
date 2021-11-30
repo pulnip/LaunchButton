@@ -1,6 +1,7 @@
 #ifndef __INC_MSTRING_H
 #define __INC_MSTRING_H
 
+#include<cstring>
 #include<list>
 #include<sstream>
 #include<string>
