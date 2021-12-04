@@ -4,6 +4,7 @@
 #include<algorithm>
 #include<chrono>
 #include<list>
+#include<optional>
 #include<thread>
 
 #include"MyTypes.h"

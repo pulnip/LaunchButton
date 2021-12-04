@@ -12,6 +12,8 @@ namespace My{
         WINDOW *base=nullptr;
         Size baseSize={0, 0};
 
+        Terminal terminal;
+
         std::list<Button> buttons;
 
     public:

@@ -25,6 +25,7 @@ namespace My{
         std::string command;
     public:
         void setCommand(const std::string &cmd){ command=cmd; isCmdChanged=true; }
+        const std::string& getCommand(void){ return command; }
     private:
         bool isCmdChanged=false;
         std::vector<std::string> args;
@@ -65,7 +66,6 @@ namespace My{
             
             return 0;
         }
-        int execute(void);
 
         bool isInside(const Pos& thatPos) const;
     };

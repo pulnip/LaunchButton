@@ -105,6 +105,8 @@ int My::LBEngine::prompt(void){
 }
 
 int My::LBEngine::click(MEVENT* mevent){
+    std::optional<Button> oButton;
+    
     auto itClickedButton=std::find_if(
         buttons.rbegin(), buttons.rend(),
         [mevent](const My::Button& b){
@@ -116,7 +118,9 @@ int My::LBEngine::click(MEVENT* mevent){
     #warning "NO IMPL";
     // TODO
     // keyDown -> wait for moving/executing
+    static Button &button=*itClickedButton;
     // keyDown & keyUp (pos not change)-> execute command
+    return terminal.run(itClickedButton->getCommand());
     // keyDown & keyUp (pos change) -> move button
 
     return 0;

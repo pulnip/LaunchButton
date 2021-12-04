@@ -9,15 +9,21 @@ namespace My{
         using Args_t=std::vector<std::string>;
 
     private:
-        Terminal()=delete;
+        int pipeio[2]={-1, -1};
+        int in_idx=1;
+        inline int  pipein(void){ return pipeio[  in_idx]; }
+        inline int pipeout(void){ return pipeio[1-in_idx]; }
+        inline void swapio(void){        in_idx=1-in_idx ; }
+
     public:
-        static int run(const std::string& raw_command);
+        Terminal();
+        ~Terminal();
+        int run(const std::string& raw_command);
     private:
-        static Args_t preprocessing(const Command_t &command);
-        static int execute(
+        Args_t preprocessing(const Command_t &command);
+        int execute(
             const Command_t &command, const bool isWait,
-            const bool myin, const bool myout,
-            const int myio_fd[2], const short myin_idx
+            const bool useMyIn, const bool useMyOut
         );
     };
 }

@@ -1,17 +1,30 @@
 #ifndef __INC_TERMINAL_TPP
 #define __INC_TERMINAL_TPP
 
+My::Terminal::Terminal(){
+#define PIPE1_FILENAME "myfifo1.pipe"
+#define PIPE2_FILENAME "myfifo1.pipe"
+#define PERMS 0666
+    mkfifo(PIPE1_FILENAME, PERMS);
+    mkfifo(PIPE2_FILENAME, PERMS);
+
+    pipeio[0]=open(PIPE1_FILENAME, O_RDWR);
+    pipeio[1]=open(PIPE2_FILENAME, O_RDWR);
+#undef PERMS
+}
+
+My::Terminal::~Terminal(){
+    close(pipein ());
+    close(pipeout());
+
+    remove(PIPE1_FILENAME);
+    remove(PIPE2_FILENAME);
+#undef PIPE1_FILENAME
+#undef PIPE2_FILENAME
+}
+
 int My::Terminal::run(const std::string& raw_command){
     Commands_t commands;
-
-    mkfifo("myfifo1.pipe", 0666);
-    mkfifo("myfifo2.pipe", 0666);
-
-    int myio[2]={
-        open("myfifo1.pipe", O_RDWR),
-        open("myfifo2.pipe", O_RDWR)
-    };
-    short myin=0;
 
     std::vector<std::string> delims={";", "&&", "&", "||", "|"};
 
@@ -47,22 +60,17 @@ int My::Terminal::run(const std::string& raw_command){
         break;
         }
 
-        int retVal=execute(command, !setDaemon, from_myin, to_myout, myio, myin);
+        int retVal=execute(command, !setDaemon, from_myin, to_myout);
+        if(from_myin) swapio();
         from_myin=to_myout=false;
 
         if(checkRetval && (bool(retVal)!=doubleAmpersand) ){
             return 1;
         }
 
-        if(isDelim==4) {
-            // pipeline
-            myin=1-myin;
-            from_myin=true;
-        }
+        // pipeline
+        if(isDelim==4) from_myin=true;
     }
-
-    remove("myfifo1.pipe");
-    remove("myfifo2.pipe");
 
     return 0;
 }
@@ -96,17 +104,16 @@ My::Terminal::Args_t My::Terminal::preprocessing(const Command_t &command){
  */
 int My::Terminal::execute(
     const Terminal::Command_t &command, const bool isWait,
-    const bool myin, const bool myout,
-    const int myio_fd[2], const short myin_idx
+    const bool useMyIn, const bool useMyOut
 ){
     pid_t pid=fork();
 
     if(pid==0){
         // pipelining
-        if(myin) dup2(myio_fd[myin_idx], STDIN_FILENO);
-        else close(myio_fd[myin_idx]);
-        if(myout) dup2(myio_fd[1-myin_idx], STDOUT_FILENO);
-        else close(myio_fd[1-myin_idx]);
+        if(useMyIn ) dup2( pipein(),  STDIN_FILENO);
+        else close(pipein());
+        if(useMyOut) dup2(pipeout(), STDOUT_FILENO);
+        else close(pipeout());
 
         Args_t args=preprocessing(command);
         CStyleArray wrapped(args);
