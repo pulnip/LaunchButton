@@ -11,21 +11,25 @@ namespace My{
 
         WINDOW* window;
         Pos pos;
+
     public:
         void setPos(const int x, const int y);
-        void move  (const int x, const int y){ setPos(pos.x+x, pos.y+y); }
+        void move  (const int dx, const int dy){ setPos(pos.x+dx, pos.y+dy); }
         const Pos& getPos(void) const{ return pos; }
+
     private:
         Size size;
         Color color;
     public:
         void setColor(const short FG, const short BG);
+
     private:
         std::string title;
         std::string command;
     public:
         void setCommand(const std::string &cmd){ command=cmd; isCmdChanged=true; }
         const std::string& getCommand(void){ return command; }
+
     private:
         bool isCmdChanged=false;
         std::vector<std::string> args;

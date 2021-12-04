@@ -28,7 +28,7 @@ namespace My{
         int OnDestroy(void);
 
         int prompt(void);
-        int click(MEVENT *mevent);
+        int click(const MEVENT* const mevent);
 
     public:
     /** @brief start the Engine */

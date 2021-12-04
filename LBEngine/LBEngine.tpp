@@ -53,7 +53,10 @@ int My::LBEngine::OnUpdate(LBEngine::ElapsedTime dt){
     case KEY_MOUSE:{
         MEVENT mevent;
         if(getmouse(&mevent)==OK){
-            log(mevent.x); log(" "); log(mevent.y); log("\n");
+            log(mevent.x); log(" "); log(mevent.y); log(" ");
+            log(mevent.bstate&BUTTON1_CLICKED ); log(" ");
+            log(mevent.bstate&BUTTON1_PRESSED ); log(" ");
+            log(mevent.bstate&BUTTON1_RELEASED); log("\n");
             break;
         }
     }
@@ -104,24 +107,38 @@ int My::LBEngine::prompt(void){
     return 0;
 }
 
-int My::LBEngine::click(MEVENT* mevent){
-    std::optional<Button> oButton;
+int My::LBEngine::click(const MEVENT* const mevent){
+    static Button* pButton;
     
-    auto itClickedButton=std::find_if(
-        buttons.rbegin(), buttons.rend(),
-        [mevent](const My::Button& b){
-            My::Pos pos={mevent->x, mevent->y};
-            return b.isInside(pos);
-    });
-    if(itClickedButton==buttons.rend()) return 1;
-    
-    #warning "NO IMPL";
-    // TODO
-    // keyDown -> wait for moving/executing
-    static Button &button=*itClickedButton;
-    // keyDown & keyUp (pos not change)-> execute command
-    return terminal.run(itClickedButton->getCommand());
-    // keyDown & keyUp (pos change) -> move button
+    // clicked (not press & release) -> execute command
+    if(mevent->bstate&BUTTON1_CLICKED){
+        return terminal.run(
+            std::find_if(
+                buttons.rbegin(), buttons.rend(),
+                [mevent](const My::Button& b){
+                    My::Pos pos={mevent->x, mevent->y};
+                    return b.isInside(pos);
+                }
+            )->getCommand()
+        );
+    }
+    // pressed -> wait for moving
+    else if(mevent->bstate&BUTTON1_PRESSED){
+        auto itClickedButton=std::find_if(
+            buttons.rbegin(), buttons.rend(),
+            [mevent](const My::Button& b){
+                My::Pos pos={mevent->x, mevent->y};
+                return b.isInside(pos);
+            }
+        );
+        if(itClickedButton==buttons.rend()) return 1;
+
+        pButton=&*itClickedButton;
+    }
+    // released (pos change) -> move button
+    else if(mevent->bstate&BUTTON1_RELEASED){
+        pButton->move(mevent->x, mevent->y);
+    }
 
     return 0;
 }

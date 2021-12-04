@@ -114,6 +114,7 @@ int My::Terminal::execute(
         else close(pipein());
         if(useMyOut) dup2(pipeout(), STDOUT_FILENO);
         else close(pipeout());
+        // __pipelining
 
         Args_t args=preprocessing(command);
         CStyleArray wrapped(args);
@@ -123,6 +124,10 @@ int My::Terminal::execute(
         if(execvp(wrapped[0], const_cast<char* const*>(wrapped.data()))<0){
             log("Terminal::execute failed\n");
         }
+    }
+    else if(pid==-1){
+        // fork failed
+        return -1;
     }
 
     if(!isWait) return pid;
