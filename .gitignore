@@ -12,6 +12,3 @@ test*
 
 # log files
 *.log
-
-# others
-.env
