@@ -19,7 +19,12 @@ namespace My{
         Terminal();
         ~Terminal();
         int run(const std::string& raw_command);
+    
     private:
+        std::map<std::string, std::string> envargs;
+        void loadEnvArgs(void);
+        void saveEnvArgs(void);
+
         Args_t preprocessing(const Command_t &command);
         int execute(
             const Command_t &command, const bool isWait,

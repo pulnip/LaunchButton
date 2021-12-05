@@ -10,10 +10,14 @@ My::Terminal::Terminal(){
 
     pipeio[0]=open(PIPE1_FILENAME, O_RDWR);
     pipeio[1]=open(PIPE2_FILENAME, O_RDWR);
+
+    loadEnvArgs();
 #undef PERMS
 }
 
 My::Terminal::~Terminal(){
+    saveEnvArgs();
+
     close(pipein ());
     close(pipeout());
 
@@ -73,6 +77,38 @@ int My::Terminal::run(const std::string& raw_command){
     }
 
     return 0;
+}
+
+void My::Terminal::loadEnvArgs(void){
+    int fd=open("myterm.env", O_CREAT|O_RDONLY);
+    
+    while(true){
+        std::string pair;
+        while(true){
+            char c;
+            read(fd, &c, 1);
+            if(c=='\n') break;
+            pair+=c;
+        }
+        auto splited=toVector(pair, {"="}, false);
+        auto key=strip(splited[0], " ");
+        auto value=strip(splited[1], " ");
+        
+        envargs.emplace(key, value);
+    }
+
+    #warning "Not Impl"
+
+    close(fd);
+}
+
+void My::Terminal::saveEnvArgs(void){
+    int fd=open("myterm.env", O_WRONLY|O_CREAT|O_TRUNC);
+
+    #warning "Not Impl"
+
+    close(fd);
+
 }
 
 My::Terminal::Args_t My::Terminal::preprocessing(const Command_t &command){
