@@ -27,13 +27,8 @@ namespace My{
         std::string title;
         std::string command;
     public:
-        void setCommand(const std::string &cmd){ command=cmd; isCmdChanged=true; }
+        void setCommand(const std::string &cmd){ command=cmd; }
         const std::string& getCommand(void){ return command; }
-
-    private:
-        bool isCmdChanged=false;
-        std::vector<std::string> args;
-        CStyleArray<std::vector<std::string>> wrapped;
 
     public:
         Button(
@@ -42,9 +37,9 @@ namespace My{
             const          int  x    =5          , const          int  y     =2                   ,
             const        short  FG   =COLOR_BLACK, const        short  BG    =COLOR_WHITE
         )
-        :window(newwin(height, width, y, x)),
-        id(newId++), pos{x, y}, size{width, height}, color{FG, BG},
-        title(title), command(cmd), args(toVector(cmd)), wrapped(args){
+        :id(newId++), pos{x, y}, size{width, height}, color{FG, BG},
+        title(title), command(cmd),
+        window(newwin(height, width, y, x)){
             init_pair(id, FG, BG);
             wbkgd(window, COLOR_PAIR(id));
             wborder(window, '|', '|', '-', '-', '*', 'x', '+', '+');
@@ -52,8 +47,16 @@ namespace My{
 
             wrefresh(window);
         }
-        Button(const Button &that){
-            #warning "Not Impl"
+        Button(const Button &that)
+        :id(newId++), pos(that.pos), size(that.size), color(that.color),
+        title(that.title), command(that.command),
+        window(newwin(size.height, size.width, pos.y, pos.x)){
+            init_pair(id, color.FG, color.BG);
+            wbkgd(window, COLOR_PAIR(id));
+            wborder(window, '|', '|', '-', '-', '*', 'x', '+', '+');
+            mvwprintw(window, 1, 1, title.c_str()); 
+
+            wrefresh(window);
         }
 
         int close(void){ delwin(window); return 0; }

@@ -70,13 +70,35 @@ StringContainer My::toSome(
     return result;
 }
 
-std::string My::strip(const std::string &origin){
+std::pair<std::string, std::string> My::toStringPair(
+    const std::string &raw, const char delim
+){
+    const std::size_t raw_len=raw.size();
+    
+    std::size_t delim_idx=-1;
+    while(raw[++delim_idx]!=delim);
+
+    return std::pair<std::string, std::string>(
+        raw.substr(0, delim_idx), raw.substr(delim_idx+1, raw_len)
+    );
+}
+
+std::string My::strip(const std::string &origin, const std::string &remove){
     const std::size_t origin_len=origin.length();
+    const std::size_t remove_len=remove.size();
     std::size_t first=0, last=0;
     bool once=false;
 
     for(int i=0; i<origin_len; ++i){
-        if(origin[i]-' '){
+        bool isUseful=true;
+        for(int j=0; j<remove_len; ++j){
+            if(origin[i]==remove[j]){
+                isUseful=false;
+                break;
+            }
+        }
+
+        if(isUseful){
             if(!once){
                 first=i;
                 once=true;

@@ -60,7 +60,11 @@ namespace My{
         return toSome<std::vector<std::string>>(origin, delims, includeDelim);
     }
 
-    std::string strip(const std::string &origin);
+    inline std::pair<std::string, std::string> toStringPair(
+        const std::string &raw, const char delim
+    );
+
+    std::string strip(const std::string &origin, const std::string &remove=" ");
 
     template<class StringContainer>
     int in(const std::string &target, const StringContainer &seq);

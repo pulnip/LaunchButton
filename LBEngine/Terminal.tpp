@@ -83,21 +83,20 @@ void My::Terminal::loadEnvArgs(void){
     int fd=open("myterm.env", O_CREAT|O_RDONLY);
     
     while(true){
-        std::string pair;
-        while(true){
-            char c;
-            read(fd, &c, 1);
-            if(c=='\n') break;
-            pair+=c;
-        }
-        auto splited=toVector(pair, {"="}, false);
-        auto key=strip(splited[0], " ");
-        auto value=strip(splited[1], " ");
-        
-        envargs.emplace(key, value);
-    }
+        std::string line;
 
-    #warning "Not Impl"
+        std::size_t n_read=0;
+        while(true){
+            char c=0;
+            if( (read(fd, &c, 1)<1)||(c=='\n') ) break;
+            line+=c;
+            n_read+=1;
+        }
+
+        if(n_read==0) break;
+
+        envargs.emplace(toStringPair(line, '='));
+    }
 
     close(fd);
 }
@@ -105,10 +104,13 @@ void My::Terminal::loadEnvArgs(void){
 void My::Terminal::saveEnvArgs(void){
     int fd=open("myterm.env", O_WRONLY|O_CREAT|O_TRUNC);
 
-    #warning "Not Impl"
+    const std::size_t envarg_num=envargs.size();
+    for(auto& envarg: envargs){
+        std::string raw=envarg.first+'='+envarg.second;
+        write(fd, raw.c_str(), raw.size());
+    }
 
     close(fd);
-
 }
 
 My::Terminal::Args_t My::Terminal::preprocessing(const Command_t &command){
