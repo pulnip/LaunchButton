@@ -1,2 +1,0 @@
-$default=DEFAULT
-${long default}="LONG DEFAULT"

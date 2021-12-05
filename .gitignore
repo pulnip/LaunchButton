@@ -9,3 +9,9 @@ test*
 
 # executable files
 *.out
+
+# log files
+*.log
+
+# others
+.env
