@@ -82,20 +82,40 @@ int My::Terminal::run(const std::string& raw_command){
 void My::Terminal::loadEnvArgs(void){
     int fd=open("myterm.env", O_CREAT|O_RDONLY);
     
+#define BUFFER_SIZE 255
+    char buffer[BUFFER_SIZE+1];
+    std::string line;
     while(true){
-        std::string line;
+        const std::size_t n_read=read(fd, buffer, BUFFER_SIZE);
+        buffer[n_read]='\0';
 
-        std::size_t n_read=0;
-        while(true){
-            char c=0;
-            if( (read(fd, &c, 1)<1)||(c=='\n') ) break;
-            line+=c;
-            n_read+=1;
+        int first=0;
+        const std::size_t end=n_read+1;
+        for(int i=0; i<end; ++i){
+            if(buffer[i]=='\n'){
+                buffer[i]='\0';
+                if(i-first){
+                    // line+=buffer[first: i]
+                    line+=buffer+first;
+                    
+                    envargs.emplace(toStringPair(line, '='));
+                    line.clear();
+                    
+                    first=i+1;
+                }
+            }
+            else if(buffer[i]=='\0'){
+                if(i-first){
+                    line+=buffer+first;
+                }
+            }
         }
 
-        if(n_read==0) break;
-
-        envargs.emplace(toStringPair(line, '='));
+        if(n_read!=BUFFER_SIZE){
+            // EOF
+            if(!line.empty()) envargs.emplace(toStringPair(line, '='));
+            break;
+        }
     }
 
     close(fd);
@@ -106,7 +126,7 @@ void My::Terminal::saveEnvArgs(void){
 
     const std::size_t envarg_num=envargs.size();
     for(auto& envarg: envargs){
-        std::string raw=envarg.first+'='+envarg.second;
+        std::string raw=envarg.first+'='+envarg.second+'\n';
         write(fd, raw.c_str(), raw.size());
     }
 
