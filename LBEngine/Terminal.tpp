@@ -2,14 +2,9 @@
 #define __INC_TERMINAL_TPP
 
 My::Terminal::Terminal(){
-#define PIPE1_FILENAME "myfifo1.pipe"
-#define PIPE2_FILENAME "myfifo1.pipe"
 #define PERMS 0666
     mkfifo(PIPE1_FILENAME, PERMS);
     mkfifo(PIPE2_FILENAME, PERMS);
-
-    pipeio[0]=open(PIPE1_FILENAME, O_RDWR);
-    pipeio[1]=open(PIPE2_FILENAME, O_RDWR);
 
     loadEnvArgs();
 #undef PERMS
@@ -17,9 +12,6 @@ My::Terminal::Terminal(){
 
 My::Terminal::~Terminal(){
     saveEnvArgs();
-
-    close(pipein ());
-    close(pipeout());
 
     remove(PIPE1_FILENAME);
     remove(PIPE2_FILENAME);
@@ -39,15 +31,15 @@ int My::Terminal::run(const std::string& raw_command){
         commands.push_back(toList(command));
     }
     
-    bool from_myin=false;
     for(auto &command: commands){
-        bool to_myout=false;
-
         int isDelim=in(command.front(), delims);
         bool doubleAmpersand=false;
         bool checkRetval=false;
         bool setDaemon=false;
+
         switch(isDelim){
+        case -1:
+            continue;
         case 1: // "&&"
             doubleAmpersand=true;
         case 3: // "||"
@@ -57,24 +49,19 @@ int My::Terminal::run(const std::string& raw_command){
             setDaemon=true;
             break;
         case 4: // "|"
-            to_myout=true;
-            break;
-        default:
-            // 0(";"), -1
-        break;
+            swapio();
         }
 
-        int retVal=execute(command, !setDaemon, from_myin, to_myout);
-        if(from_myin) swapio();
-        from_myin=to_myout=false;
+        flushpipe();
 
-        if(checkRetval && (bool(retVal)!=doubleAmpersand) ){
+        int retVal=execute(command, !setDaemon);
+
+        if( checkRetval && (bool(retVal)!=doubleAmpersand) ){
             return 1;
         }
-
-        // pipeline
-        if(isDelim==4) from_myin=true;
     }
+
+    flushpipe();
 
     return 0;
 }
@@ -161,18 +148,14 @@ My::Terminal::Args_t My::Terminal::preprocessing(const Command_t &command){
  * @return if wait, return success(0) or not. if not, return program pid.
  */
 int My::Terminal::execute(
-    const Terminal::Command_t &command, const bool isWait,
-    const bool useMyIn, const bool useMyOut
+    const Terminal::Command_t &command, const bool isWait
 ){
     pid_t pid=fork();
 
     if(pid==0){
         // pipelining
-        if(useMyIn ) dup2( pipein(),  STDIN_FILENO);
-        else close(pipein());
-        if(useMyOut) dup2(pipeout(), STDOUT_FILENO);
-        else close(pipeout());
-        // __pipelining
+        dup2(pipein(), STDIN_FILENO);
+        dup2(pipeout(), STDOUT_FILENO);
 
         Args_t args=preprocessing(command);
         CStyleArray wrapped(args);
@@ -181,6 +164,7 @@ int My::Terminal::execute(
 
         if(execvp(wrapped[0], const_cast<char* const*>(wrapped.data()))<0){
             log("Terminal::execute failed\n");
+            exit(-1);
         }
     }
     else if(pid==-1){
