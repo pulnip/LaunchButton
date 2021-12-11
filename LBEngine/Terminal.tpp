@@ -2,18 +2,14 @@
 #define __INC_TERMINAL_TPP
 
 My::Terminal::Terminal(){
-#define PERMS 0666
-    myiofd[0]=open(PIPE1_FILENAME, O_CREAT|O_RDWR|PERMS);
-    myiofd[1]=open(PIPE2_FILENAME, O_CREAT|O_RDWR|PERMS);
+    pipe(pipefd[0]);
+    pipe(pipefd[1]);
 
     loadEnvArgs();
-#undef PERMS
 }
 
 My::Terminal::~Terminal(){
     saveEnvArgs();
-#undef PIPE1_FILENAME
-#undef PIPE2_FILENAME
 }
 
 int My::Terminal::run(const std::string& raw_command){
@@ -28,15 +24,18 @@ int My::Terminal::run(const std::string& raw_command){
         commands.push_back(toList(command));
     }
     
-    auto before=commands.begin();
+    auto cmd=commands.begin();
+    bool _out=false;
     for(auto it=commands.begin(); it!=commands.end(); ++it){
         int isDelim=in(it->front(), delims);
         bool doubleAmpersand=false;
         bool checkRetval=false;
         bool setDaemon=false;
 
+        bool _in=_out;
         switch(isDelim){
         case -1:
+            cmd=it;
             continue;
         case 1: // "&&"
             doubleAmpersand=true;
@@ -47,21 +46,19 @@ int My::Terminal::run(const std::string& raw_command){
             setDaemon=true;
             break;
         case 4: // "|"
-            swapio();
+            _out=true;
         }
 
-        flushpipe();
-
-        int retVal=execute(*before, !setDaemon);
-
+        int retVal=execute(*cmd, !setDaemon, _in, _out);
+        if(isDelim!=4){
+            flushpipe();
+        }
+        else swapio();
+        
         if( checkRetval && (bool(retVal)!=doubleAmpersand) ){
             return 1;
         }
-
-        before=it;
     }
-
-    flushpipe();
 
     return 0;
 }
@@ -127,11 +124,13 @@ My::Terminal::Args_t My::Terminal::preprocessing(const Command_t &command){
         if(!(*it).compare("<")){
             // redirect
             int fd=open((++it)->c_str(), O_RDONLY);
+            log(it->data());
             dup2(fd, STDIN_FILENO);
         }
         else if(!(*it).compare(">")){
             // redirect to 
             int fd=open((++it)->c_str(), O_CREAT|O_WRONLY);
+            log(it->data());
             dup2(fd, STDOUT_FILENO);
         }
         else args.push_back(*it);
@@ -148,27 +147,31 @@ My::Terminal::Args_t My::Terminal::preprocessing(const Command_t &command){
  * @return if wait, return success(0) or not. if not, return program pid.
  */
 int My::Terminal::execute(
-    const Terminal::Command_t &command, const bool isWait
+    const Terminal::Command_t &command, const bool isWait,
+    const bool _in, const bool _out
 ){
     pid_t pid=fork();
 
     if(pid==0){
         // pipelining
-        dup2(pipein(), STDIN_FILENO);
-        dup2(pipeout(), STDOUT_FILENO);
+        if(_in) dup2(myin()[0], STDIN_FILENO);
+        else close(myin()[0]);
+        if(_out) dup2(myout()[1], STDOUT_FILENO);
+        else close(myout()[1]);
 
         Args_t args=preprocessing(command);
         CStyleArray wrapped(args);
 
         if(!isWait) daemon(0, 0);
 
+        log(wrapped[0]);
         if(execvp(wrapped[0], const_cast<char* const*>(wrapped.data()))<0){
             log("Terminal::execute failed\n");
             exit(-1);
         }
     }
     else if(pid==-1){
-        // fork failed
+        log("fork() failed\n");
         return -1;
     }
 

@@ -1,10 +1,7 @@
 #ifndef __INC_TERMINAL_HPP
 #define __INC_TERMINAL_HPP
 
-#define PIPE1_FILENAME "mypipe1.txt"
-#define PIPE2_FILENAME "mypipe2.txt"
-
-#include<iostream>
+#include<poll.h>
 
 namespace My{
     class Terminal{
@@ -14,23 +11,25 @@ namespace My{
         using Args_t=std::vector<std::string>;
 
     private:
-        int myiofd[2]={-1, -1};
+        int pipefd[2][2]={{-1, -1}, {-1, -1}};
         int in_idx=0;
-        inline int  pipein(void){ return myiofd[in_idx]; }
-        inline int pipeout(void){ return myiofd[1-in_idx]; }
-        inline void swapio(void){        in_idx=1-in_idx ; }
+
+        int* myin  (void){ return pipefd[  in_idx]; }
+        int* myout (void){ return pipefd[1-in_idx]; }
+        void swapio(void){        in_idx=1-in_idx ; }
 
         void flushpipe(void){
         #define BUFFER_SIZE 255
-            int outfd=pipeout();
             char buffer[BUFFER_SIZE+1];
 
-            int nread=0;
-            while((nread=read(outfd, buffer, BUFFER_SIZE))>0){
-                buffer[nread]='\0';
-                std::cout<<buffer;
+            struct pollfd _pollfd={.fd=myout()[0], .events=POLLIN};
+            while(true){
+                if( poll(&_pollfd, 1, 0)==1){
+                    int nread=read(myout()[0], buffer, BUFFER_SIZE);
+                    buffer[nread]='\0';
+                    outbuffer<<buffer;
+                }else break;
             }
-            close(outfd);
         #undef BUFFER_SIZE
         }
     
@@ -48,7 +47,10 @@ namespace My{
         void saveEnvArgs(void);
 
         Args_t preprocessing(const Command_t &command);
-        int execute(const Command_t &command, const bool isWait);
+        int execute(
+            const Command_t &command, const bool isWait,
+            const bool _in=false, const bool _out=false
+        );
     };
 }
 
