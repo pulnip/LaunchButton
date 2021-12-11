@@ -4,7 +4,7 @@
 namespace My{
     int logfd=-1;
     int initLog(void){
-        return logfd=open("LBEngine.log", O_CREAT|O_WRONLY|O_APPEND, 0666);
+        return logfd=open("LBEngine.log", O_CREAT|O_WRONLY|O_APPEND, 0664);
     }
     int closeLog(void){ return close(logfd); }
     int log(const char* str){

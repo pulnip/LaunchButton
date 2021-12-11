@@ -65,7 +65,7 @@ int My::Terminal::run(const std::string& raw_command){
 }
 
 void My::Terminal::loadEnvArgs(void){
-    int fd=open("myterm.env", O_CREAT|O_RDONLY);
+    int fd=open("myterm.env", O_CREAT|O_RDONLY, 0664);
     
 #define BUFFER_SIZE 255
     char buffer[BUFFER_SIZE+1];
@@ -107,7 +107,7 @@ void My::Terminal::loadEnvArgs(void){
 }
 
 void My::Terminal::saveEnvArgs(void){
-    int fd=open("myterm.env", O_WRONLY|O_CREAT|O_TRUNC);
+    int fd=open("myterm.env", O_WRONLY|O_CREAT|O_TRUNC, 0664);
 
     const std::size_t envarg_num=envargs.size();
     for(auto& envarg: envargs){
@@ -128,7 +128,7 @@ My::Terminal::Args_t My::Terminal::preprocessing(const Command_t &command){
             dup2(fd, STDIN_FILENO);
         }
         else if(!(*it).compare(">")){
-            int fd=open((++it)->c_str(), O_CREAT|O_WRONLY);
+            int fd=open((++it)->c_str(), O_CREAT|O_WRONLY, 0664);
             dup2(fd, STDOUT_FILENO);
         }
         else args.push_back(*it);
@@ -159,7 +159,11 @@ int My::Terminal::execute(
         Args_t args=preprocessing(command);
         CStyleArray wrapped(args);
 
-        if(!isWait) daemon(0, 0);
+        if(!isWait){
+            // make daemon
+            #warning "Not Impl"
+            daemon(0, 0);
+        }
 #ifndef __RELEASE
         log(wrapped[0]);
 #endif
