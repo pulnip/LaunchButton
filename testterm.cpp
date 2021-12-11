@@ -1,8 +1,10 @@
+#define __RELEASE
+
 #include"LBEngine/Terminal.h"
 #include<iostream>
 
-int main(int argc, const char* argv[]){
-    if(argc == 1) return 0;
+int main(int argc, const char* argv[2]){
+    if(argc == 1) argv[1]="cat test.txt | sort ; echo END";
     My::initLog();
     My::Terminal t;
 
@@ -10,8 +12,7 @@ int main(int argc, const char* argv[]){
     t.run(s);
 
     std::string result;
-    while(!t.outbuffer.eof()){
-        t.outbuffer>>result;
+    while(std::getline(t.outbuffer, result, '\n')){
         std::cout<<result<<std::endl;
     }
     My::closeLog();

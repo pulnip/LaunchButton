@@ -17,6 +17,15 @@ namespace My{
         int* myin  (void){ return pipefd[  in_idx]; }
         int* myout (void){ return pipefd[1-in_idx]; }
         void swapio(void){        in_idx=1-in_idx ; }
+        void closein(void){
+            close(myin()[0]); close(myin()[1]);
+            myin()[0]=-1; myin()[1]=-1;
+        }
+        void closeout(void){
+            close(myout()[0]); close(myout()[1]);
+            myout()[0]=-1; myout()[1]=-1;
+        }
+
 
         void flushpipe(void){
         #define BUFFER_SIZE 255
@@ -24,11 +33,18 @@ namespace My{
 
             struct pollfd _pollfd={.fd=myout()[0], .events=POLLIN};
             while(true){
-                if( poll(&_pollfd, 1, 0)==1){
-                    int nread=read(myout()[0], buffer, BUFFER_SIZE);
+                int nread=0;
+                if( (poll(&_pollfd, 1, 0)==1) &&
+                    ((nread=read(myout()[0], buffer, BUFFER_SIZE))>0)
+                ){
                     buffer[nread]='\0';
                     outbuffer<<buffer;
-                }else break;
+                    continue;
+                }
+                else if(nread<0){
+                    log("read() error!\n");
+                }
+                break;
             }
         #undef BUFFER_SIZE
         }
@@ -49,7 +65,7 @@ namespace My{
         Args_t preprocessing(const Command_t &command);
         int execute(
             const Command_t &command, const bool isWait,
-            const bool _in=false, const bool _out=false
+            const bool pipeline
         );
     };
 }
