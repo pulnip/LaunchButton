@@ -1,8 +1,10 @@
 #ifndef __INC_TERMINAL_HPP
 #define __INC_TERMINAL_HPP
 
-#define PIPE1_FILENAME "myfifo1.pipe"
-#define PIPE2_FILENAME "myfifo2.pipe"
+#define PIPE1_FILENAME "mypipe1.txt"
+#define PIPE2_FILENAME "mypipe2.txt"
+
+#include<iostream>
 
 namespace My{
     class Terminal{
@@ -12,15 +14,10 @@ namespace My{
         using Args_t=std::vector<std::string>;
 
     private:
-        int in_idx=1;
-        int pipein(void){
-            if(in_idx) return open(PIPE1_FILENAME, O_RDONLY|O_NDELAY);
-            else return open(PIPE2_FILENAME, O_RDONLY|O_NDELAY);
-        }
-        int pipeout(void){
-            if(in_idx) return open(PIPE2_FILENAME, O_WRONLY|O_NDELAY);
-            else return open(PIPE1_FILENAME, O_WRONLY|O_NDELAY);
-        }
+        int myiofd[2]={-1, -1};
+        int in_idx=0;
+        inline int  pipein(void){ return myiofd[in_idx]; }
+        inline int pipeout(void){ return myiofd[1-in_idx]; }
         inline void swapio(void){        in_idx=1-in_idx ; }
 
         void flushpipe(void){
@@ -31,7 +28,7 @@ namespace My{
             int nread=0;
             while((nread=read(outfd, buffer, BUFFER_SIZE))>0){
                 buffer[nread]='\0';
-                outbuffer<<buffer<<'\n';
+                std::cout<<buffer;
             }
             close(outfd);
         #undef BUFFER_SIZE

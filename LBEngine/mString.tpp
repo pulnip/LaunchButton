@@ -9,7 +9,7 @@ void My::CStyleArray<Container>::copy(const Container &that){
         else pT[i]=&element;
         i+=1;
     }
-    pT[i]=nullptr;
+    pT[i]=NULL;
 }
 
 template<class Container>

@@ -3,8 +3,8 @@
 
 My::Terminal::Terminal(){
 #define PERMS 0666
-    mkfifo(PIPE1_FILENAME, PERMS);
-    mkfifo(PIPE2_FILENAME, PERMS);
+    myiofd[0]=open(PIPE1_FILENAME, O_CREAT|O_RDWR|PERMS);
+    myiofd[1]=open(PIPE2_FILENAME, O_CREAT|O_RDWR|PERMS);
 
     loadEnvArgs();
 #undef PERMS
@@ -12,9 +12,6 @@ My::Terminal::Terminal(){
 
 My::Terminal::~Terminal(){
     saveEnvArgs();
-
-    remove(PIPE1_FILENAME);
-    remove(PIPE2_FILENAME);
 #undef PIPE1_FILENAME
 #undef PIPE2_FILENAME
 }
@@ -31,8 +28,9 @@ int My::Terminal::run(const std::string& raw_command){
         commands.push_back(toList(command));
     }
     
-    for(auto &command: commands){
-        int isDelim=in(command.front(), delims);
+    auto before=commands.begin();
+    for(auto it=commands.begin(); it!=commands.end(); ++it){
+        int isDelim=in(it->front(), delims);
         bool doubleAmpersand=false;
         bool checkRetval=false;
         bool setDaemon=false;
@@ -54,11 +52,13 @@ int My::Terminal::run(const std::string& raw_command){
 
         flushpipe();
 
-        int retVal=execute(command, !setDaemon);
+        int retVal=execute(*before, !setDaemon);
 
         if( checkRetval && (bool(retVal)!=doubleAmpersand) ){
             return 1;
         }
+
+        before=it;
     }
 
     flushpipe();
