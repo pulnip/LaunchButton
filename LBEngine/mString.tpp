@@ -62,7 +62,9 @@ StringContainer My::toSome(
         }
         // if not found, exit.
         else{
-            result.push_back(strip(std::string(&origin[pos], origin.size()-pos)));
+            std::string rest=strip(std::string(&origin[pos], origin.size()-pos));
+            if(rest.compare(""))
+                result.push_back(rest);
             pos=origin.npos;
         }
     }

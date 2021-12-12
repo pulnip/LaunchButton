@@ -26,7 +26,6 @@ namespace My{
             myout()[0]=-1; myout()[1]=-1;
         }
 
-
         void flushpipe(void){
         #define BUFFER_SIZE 255
             char buffer[BUFFER_SIZE+1];

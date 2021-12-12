@@ -15,8 +15,10 @@ int My::Terminal::run(const std::string& raw_command){
     std::vector<std::string> delims={";", "&&", "&", "||", "|"};
 
     auto raw_commands=toList(raw_command, delims, true);
-    raw_commands.push_back(";"); // semi-colon ended for last command.
-    
+    // semi-colon ended for last command.
+    if(in(raw_commands.back(), delims)==-1){
+        raw_commands.push_back(";");
+    }
     for(auto &command: raw_commands){
         commands.push_back(toList(command));
     }
@@ -56,7 +58,7 @@ int My::Terminal::run(const std::string& raw_command){
             pipeline=true;
         }
         
-        if( checkRetval && (bool(retVal)!=doubleAmpersand) ){
+        if( checkRetval && (bool(retVal)==doubleAmpersand) ){
             return 1;
         }
     }
@@ -162,8 +164,8 @@ int My::Terminal::execute(
         // daemon process
         else{
             char* pwd=getcwd(NULL, 0);
-            std::string oldpath=pwd;
-            args.front()=oldpath+'/'+args.front();
+            std::string oldpath=std::string(pwd)+'/';
+            args.front()=oldpath+args.front();
             free(pwd);
 
             pid_t pid1=fork();
@@ -172,7 +174,7 @@ int My::Terminal::execute(
                 exit(-1);
             }
             // terminate parent process
-            else if(pid1>0) exit(pid1);
+            else if(pid1>0) exit(0);
 
             My::closeLog();
             My::initLog(oldpath);
@@ -222,11 +224,13 @@ int My::Terminal::execute(
     }
     closein();
 
-    // if(!isWait) return 0;
+    if(!isWait) return 0;
 
     int status=0;
     waitpid(pid, &status, 0);
+#ifndef __RELEASE
     log(status); log("\n");
+#endif
     return status;
 }
 

@@ -5,7 +5,7 @@ namespace My{
     int logfd=-1;
     int initLog(const std::string &path=""){
         return logfd=open(
-            (path+"/LBEngine.log").c_str(),
+            (path+"LBEngine.log").c_str(),
             O_CREAT|O_WRONLY|O_APPEND, 0664
         );
     }
