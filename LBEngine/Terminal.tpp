@@ -151,21 +151,65 @@ int My::Terminal::execute(
     pid_t pid=fork();
 
     if(pid==0){
-        // pipelining
-        if(pipeline) dup2(myin()[0], STDIN_FILENO);
-        else close(myin()[0]);
-        dup2(myout()[1], STDOUT_FILENO);
-
         Args_t args=preprocessing(command);
+        // normal process
+        if(isWait){
+            // pipelining
+            if(pipeline) dup2(myin()[0], STDIN_FILENO);
+            else close(myin()[0]);
+            dup2(myout()[1], STDOUT_FILENO);
+        }
+        // daemon process
+        else{
+            char* pwd=getcwd(NULL, 0);
+            std::string oldpath=pwd;
+            args.front()=oldpath+'/'+args.front();
+            free(pwd);
+
+            pid_t pid1=fork();
+            if(pid1<0){
+                log("Daemonize: fork() failed\n");
+                exit(-1);
+            }
+            // terminate parent process
+            else if(pid1>0) exit(pid1);
+
+            My::closeLog();
+            My::initLog(oldpath);
+#ifndef __RELEASE
+            log("Daemonize: fork() success\n");
+#endif
+            // new session
+            if(setsid()<0){
+                log("Daemonize: setsid() failed\n");
+                exit(-1);
+            }
+#ifndef __RELEASE
+            log("Daemonize: setsid() success\n");
+#endif
+            // ignore signals
+            signal(SIGCHLD, SIG_IGN);
+            signal(SIGHUP, SIG_IGN);
+
+            // unmask the file mode
+            umask(0);
+
+            // change cwd to root dir
+            chdir("/");
+
+            // close all std fd
+            close(STDIN_FILENO);
+            close(STDOUT_FILENO);
+            close(STDERR_FILENO);
+#ifndef __RELEASE
+            log("successfully daemonized\n");
+#endif
+        }
+
         CStyleArray wrapped(args);
 
-        if(!isWait){
-            // make daemon
-            #warning "Not Impl"
-            daemon(0, 0);
-        }
 #ifndef __RELEASE
-        log(wrapped[0]);
+        log(wrapped[0]); log("\n");
 #endif
         if(execvp(wrapped[0], const_cast<char* const*>(wrapped.data()))<0){
             log("Terminal::execute failed\n");
@@ -178,10 +222,11 @@ int My::Terminal::execute(
     }
     closein();
 
-    if(!isWait) return pid;
+    // if(!isWait) return 0;
 
     int status=0;
     waitpid(pid, &status, 0);
+    log(status); log("\n");
     return status;
 }
 
