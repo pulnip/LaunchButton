@@ -250,10 +250,11 @@ int My::LBEngine::evaluateCommand(const std::string &cmd){
         return 0;
     }
     else{
-        std::vector<std::string> delims={"="};
-        auto i=in(cmd, delims);
-        if(i==0){
+        auto li=toList(cmd, {"="}, true);
+        auto i=in("=", li);
+        if(i!=-1){
             terminal.addEnvArgs(toStringPair(cmd, '='));
+            return 0;
         }
     }
 
