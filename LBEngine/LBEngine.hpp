@@ -27,8 +27,11 @@ namespace My{
         int OnUpdate(ElapsedTime dt);
         int OnDestroy(void);
 
-        int prompt(void);
+        int prompt(const std::string &cmd);
+        void makeButton(const MEVENT* const mevent);
         int click(const MEVENT* const mevent);
+
+        int evaluateCommand(const std::string &cmd);
 
     public:
     /** @brief start the Engine */

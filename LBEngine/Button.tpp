@@ -23,4 +23,9 @@ bool My::Button::isInside(const Pos& thatPos) const{
            (pos.y<=thatPos.y) && (thatPos.y<=pos.y+size.height);
 }
 
+bool My::Button::isX(const Pos& thatPos) const{
+    return ((pos.x+size.width-1)==thatPos.x) &&
+            (pos.y==thatPos.y);
+}
+
 #endif // __INC_BUTTON_TPP

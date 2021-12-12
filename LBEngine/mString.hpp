@@ -64,7 +64,7 @@ namespace My{
         const std::string &raw, const char delim
     );
 
-    std::string strip(const std::string &origin, const std::string &remove=" ");
+    std::string strip(const std::string &origin, const std::string &remove);
 
     template<class StringContainer>
     int in(const std::string &target, const StringContainer &seq);

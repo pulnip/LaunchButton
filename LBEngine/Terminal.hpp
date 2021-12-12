@@ -60,7 +60,13 @@ namespace My{
         std::map<std::string, std::string> envargs;
         void loadEnvArgs(void);
         void saveEnvArgs(void);
+    
+    public:
+        void addEnvArgs(const std::pair<std::string, std::string> &pair){
+            envargs.emplace(pair);
+        }
 
+    private:
         Args_t preprocessing(const Command_t &command);
         int execute(
             const Command_t &command, const bool isWait,

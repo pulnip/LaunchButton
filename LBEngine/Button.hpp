@@ -29,6 +29,8 @@ namespace My{
     public:
         void setCommand(const std::string &cmd){ command=cmd; }
         const std::string& getCommand(void){ return command; }
+        void setTitle(const std::string &_title){ title.clear(); title=_title; }
+        const std::string& getTitle(void){ return title; }
 
     public:
         Button(
@@ -62,6 +64,7 @@ namespace My{
         int close(void){ delwin(window); return 0; }
     
         int draw(void){
+            wclear(window);
             wborder(window, '|', '|', '-', '-', '*', 'x', '+', '+');
             mvwprintw(window, 1, 1, title.c_str()); 
 
@@ -75,6 +78,7 @@ namespace My{
         }
 
         bool isInside(const Pos& thatPos) const;
+        bool isX(const Pos& thatPos) const;
     };
 }
 

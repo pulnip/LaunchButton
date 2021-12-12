@@ -122,6 +122,7 @@ void My::Terminal::saveEnvArgs(void){
 
 My::Terminal::Args_t My::Terminal::preprocessing(const Command_t &command){
     Args_t args;
+    std::list<std::string> delim={"#"};
 
     for(auto it=command.cbegin(); it!=command.cend(); ++it){
         // redirect
@@ -132,6 +133,18 @@ My::Terminal::Args_t My::Terminal::preprocessing(const Command_t &command){
         else if(!(*it).compare(">")){
             int fd=open((++it)->c_str(), O_CREAT|O_WRONLY, 0664);
             dup2(fd, STDOUT_FILENO);
+        }
+        else if(in(it->substr(0, 1), delim)==0){
+            std::string key=strip(*it, "#{}");
+#ifndef __RELEASE
+            log((key+'\n').c_str());
+#endif
+            auto _it=envargs.find(key);
+
+            if(_it != envargs.end()){
+                args.push_back(_it->second);
+            }
+            else args.push_back(*it);
         }
         else args.push_back(*it);
     }

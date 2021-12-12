@@ -54,7 +54,7 @@ StringContainer My::toSome(
         
         // if found, push_back
         if(min!=origin.npos){
-            result.push_back(strip(std::string(&origin[pos], min-pos)));
+            result.push_back(strip(std::string(&origin[pos], min-pos), " "));
             if(includeDelim){
                 result.push_back(delims[idx]);
             }
@@ -62,7 +62,7 @@ StringContainer My::toSome(
         }
         // if not found, exit.
         else{
-            std::string rest=strip(std::string(&origin[pos], origin.size()-pos));
+            std::string rest=strip(std::string(&origin[pos], origin.size()-pos), " ");
             if(rest.compare(""))
                 result.push_back(rest);
             pos=origin.npos;
@@ -86,8 +86,9 @@ std::pair<std::string, std::string> My::toStringPair(
 }
 
 std::string My::strip(const std::string &origin, const std::string &remove){
-    const std::size_t origin_len=origin.length();
+    const std::size_t origin_len=origin.size();
     const std::size_t remove_len=remove.size();
+
     std::size_t first=0, last=0;
     bool once=false;
 
