@@ -1,3 +1,4 @@
+#define __RELEASE
 #include"LBEngine/LBEngine.h"
 
 int main(void){
