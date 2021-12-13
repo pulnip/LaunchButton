@@ -132,7 +132,7 @@ My::Terminal::Args_t My::Terminal::preprocessing(const Command_t &command){
         }
         else if(!(*it).compare(">")){
             int fd=open((++it)->c_str(), O_CREAT|O_WRONLY, 0664);
-            dup2(fd, STDOUT_FILENO);
+            dup2(fd, myout()[1]);
         }
         else if(in(it->substr(0, 1), delim)==0){
             std::string key=strip(*it, "#{}");
